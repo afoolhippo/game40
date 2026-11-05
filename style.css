@@ -247,8 +247,14 @@ button {
 }
 
 .status-box.eliminated {
-  opacity: 0.3;
-  text-decoration: line-through;
+  color: #555;
+}
+.status-box.eliminated::after {
+  content: "脱落";
+  display: block;
+  color: #b71920;
+  font-size: 17px;
+  font-weight: bold;
 }
 
 /* 結果 */
@@ -296,9 +302,14 @@ button {
 }
 
 .result-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(92%, 360px);
+  margin: 8px auto 0;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s linear;
 }
 
 /* スマホ調整 */
@@ -330,3 +341,34 @@ button {
     margin-top: 64px;
   }
 }
+
+.result-buttons.visible { opacity: 1; }
+.result-buttons.ready { pointer-events: auto; }
+.result-buttons button {
+  min-width: 0;
+  width: 100%;
+  min-height: 56px;
+  margin: 0;
+  padding: 8px 4px;
+  font-size: clamp(14px, 3.8vw, 17px);
+  overflow-wrap: anywhere;
+}
+.result-buttons #homeBtn { grid-column: 1 / -1; }
+#resultScreen { overflow-y: auto; }
+.desk-wrap { position: relative; }
+.out-notice {
+  position: absolute;
+  z-index: 3;
+  top: 40%;
+  left: 4%;
+  width: 92%;
+  text-align: center;
+  color: #b71920;
+  background: rgba(255,255,255,0.94);
+  border: 3px solid #b71920;
+  padding: 10px 4px;
+  font-size: clamp(22px, 6vw, 30px);
+  font-weight: bold;
+  pointer-events: none;
+}
+.out-notice[hidden] { display: none; }

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261106">
 </head>
 <body>
 
@@ -63,6 +63,7 @@
     </div>
 
     <div class="desk-wrap">
+      <div id="outNotice" class="out-notice" role="status" hidden></div>
 
       <canvas
         id="gameCanvas"
@@ -147,22 +148,10 @@
         放課後の王者！
       </p>
 
-      <div class="result-buttons">
-
-        <button
-          id="retryBtn"
-          class="main-btn"
-        >
-          もう1回
-        </button>
-
-        <button
-          id="homeBtn"
-          class="sub-btn"
-        >
-          ホームへ
-        </button>
-
+      <div id="resultButtons" class="result-buttons" inert>
+        <button id="shareButton" class="sub-btn" disabled>Xでシェア</button>
+        <button id="retryBtn" class="main-btn" disabled>もう1回遊ぶ</button>
+        <button id="homeBtn" class="sub-btn" disabled>カバゲーセンへ</button>
       </div>
 
     </div>
@@ -171,7 +160,7 @@
 
 </main>
 
-<script src="game.js"></script>
+<script src="game.js?v=20261106"></script>
 
 </body>
 </html>

@@ -29,6 +29,34 @@ const statusEls = {
   newt: document.getElementById("statusNewt").parentElement,
 };
 
+const resultButtons = document.getElementById("resultButtons");
+const shareButton = document.getElementById("shareButton");
+const outNotice = document.getElementById("outNotice");
+const bgm = new Audio("bgm.mp3");
+bgm.loop = true;
+bgm.volume = 0.22;
+let shareResult = "";
+let outNoticeUntil = 0;
+const DESK = { left: 0, top: 0, right: canvas.width, bottom: canvas.height };
+
+function hideResultButtons() {
+  resultButtons.classList.remove("visible", "ready");
+  resultButtons.inert = true;
+  resultButtons.querySelectorAll("button").forEach(b => b.disabled = true);
+}
+
+function revealResultButtons() {
+  hideResultButtons();
+  schedule(() => {
+    resultButtons.classList.add("visible");
+    schedule(() => {
+      resultButtons.classList.add("ready");
+      resultButtons.inert = false;
+      resultButtons.querySelectorAll("button").forEach(b => b.disabled = false);
+    }, 350);
+  }, 1500);
+}
+
 const W = canvas.width;
 const H = canvas.height;
 
@@ -63,6 +91,11 @@ function schedule(callback, delay) {
 
 function stopGame() {
   gameRunning = false;
+  bgm.pause();
+  bgm.currentTime = 0;
+  hideResultButtons();
+  outNotice.hidden = true;
+  outNoticeUntil = 0;
   sessionId++;
   cancelAnimationFrame(frameId);
   frameId = null;
@@ -348,6 +381,11 @@ canvas.addEventListener("touchend", endDrag, { passive: false });
 function update() {
   if (!gameRunning || gameEnded) return;
   let anyMoving = false;
+  const fallen = [];
+  if (outNoticeUntil && performance.now() >= outNoticeUntil) {
+    outNotice.hidden = true;
+    outNoticeUntil = 0;
+  }
 
   pieces.forEach((p) => {
     if (!p.alive) return;
@@ -365,12 +403,13 @@ function update() {
       p.vy = 0;
     }
 
-    if (p.x < -30 || p.x > W + 30 || p.y < -30 || p.y > H + 30) {
+    if (p.x < DESK.left || p.x > DESK.right || p.y < DESK.top || p.y > DESK.bottom) {
       p.alive = false;
       p.vx = 0;
       p.vy = 0;
 
-      messageText.textContent = `${p.name} OUT！`;
+      fallen.push(p.name);
+      messageText.textContent = `${p.name} 脱落！`;
 
       if (statusEls[p.id]) {
         statusEls[p.id].classList.add("eliminated");
@@ -379,6 +418,11 @@ function update() {
     }
   });
 
+  if (fallen.length) {
+    outNotice.textContent = fallen.join("・") + " 脱落！";
+    outNotice.hidden = false;
+    outNoticeUntil = performance.now() + 1000;
+  }
   collisionCheck();
 
   const alive = pieces.filter((p) => p.alive);
@@ -476,7 +520,7 @@ function draw() {
 
 function drawDesk() {
   ctx.fillStyle = "#d6b37a";
-  ctx.fillRect(0, 0, W, H);
+  ctx.fillRect(DESK.left, DESK.top, DESK.right - DESK.left, DESK.bottom - DESK.top);
 
   ctx.strokeStyle = "rgba(100, 60, 20, 0.35)";
   ctx.lineWidth = 2;
@@ -583,21 +627,43 @@ function finishGame(winner) {
       : "全員落下！<br>机の上は大混乱！";
   }
 
+  shareResult = winner && winner.id === "hippo"
+    ? "最後まで机に残った！✏️\n結果：優勝！"
+    : winner ? `机から落ちちゃった！✏️\n結果：負け（${winner.name}が優勝）`
+    : "机の上は大混乱！✏️\n結果：全員落下";
+  outNotice.textContent = "決着！";
+  outNotice.hidden = false;
   schedule(() => {
+    outNotice.hidden = true;
     showScreen("result");
-  }, 700);
+    revealResultButtons();
+  }, 1000);
 }
 
 function startGame() {
   stopGame();
   gameRunning = true;
   resetGame();
+  bgm.currentTime = 0;
+  bgm.play().catch(() => {});
   frameId = requestAnimationFrame(loop);
 }
 
 titleImage.addEventListener("click", startGame);
 startBtn.addEventListener("click", startGame);
-retryBtn.addEventListener("click", startGame);
+function returnToTitle() {
+  stopGame();
+  showScreen("title");
+}
+retryBtn.addEventListener("click", returnToTitle);
+shareButton.addEventListener("click", () => {
+  if (shareButton.disabled) return;
+  const gameURL = new URL(".", location.href).href;
+  const text = shareResult + '\n無料ブラウザゲーム「放課後消しピンバトル」\n'
+    + gameURL + '\n#放課後消しピンバトル\n#カバゲーセン';
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text),
+    "_blank", "noopener,noreferrer");
+});
 
 backTitleBtn.addEventListener("click", () => {
   stopGame();
@@ -605,7 +671,7 @@ backTitleBtn.addEventListener("click", () => {
 });
 
 homeBtn.addEventListener("click", () => {
-  location.href = "https://afoolhippo.github.io/home/";
+  location.href = "https://afoolhippo.github.io/home/?skipTitle=1";
 });
 
 showScreen("title");
