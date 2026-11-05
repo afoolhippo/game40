@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <title>放課後消しピンバトル</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="game-shell">
+
+  <!-- タイトル画面 -->
+  <section id="titleScreen" class="screen active">
+
+    <div class="title-card">
+
+      <img
+        id="titleImage"
+        src="title.png"
+        alt="放課後消しピンバトル"
+        class="title-image"
+      >
+
+      <div class="rule-box">
+        <p>机から相手を落とせ！</p>
+        <p>最後まで生き残れば優勝！</p>
+        <p>消しゴムを引っ張って発射！</p>
+        <p>先生接近イベントあり！</p>
+      </div>
+
+      <button id="startBtn" class="main-btn">
+        タップしてスタート
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- ゲーム画面 -->
+  <section id="gameScreen" class="screen">
+
+    <button id="backTitleBtn" class="back-title-btn">
+      タイトルへ
+    </button>
+
+    <div class="hud">
+
+      <div id="turnText" class="turn-text">
+        カバのターン
+      </div>
+
+      <div id="messageText" class="message-text">
+        ドラッグで引っ張る！
+      </div>
+
+    </div>
+
+    <div class="desk-wrap">
+
+      <canvas
+        id="gameCanvas"
+        width="360"
+        height="520"
+      ></canvas>
+
+      <div id="tutorialHint" class="tutorial-hint">
+        <div class="finger">👆</div>
+
+        <div class="hint-text">
+          ドラッグで<br>
+          引っ張る！
+        </div>
+      </div>
+
+    </div>
+
+    <div class="power-wrap">
+
+      <span>POWER</span>
+
+      <div class="power-frame">
+        <div
+          id="powerBar"
+          class="power-bar"
+        ></div>
+      </div>
+
+    </div>
+
+    <!-- 生存状況 -->
+    <div class="status-row">
+
+      <div class="status-box">
+        <div id="statusHippo" class="status-name">
+          カバ
+        </div>
+      </div>
+
+      <div class="status-box">
+        <div id="statusKappa" class="status-name">
+          河童
+        </div>
+      </div>
+
+      <div class="status-box">
+        <div id="statusTurtle" class="status-name">
+          カメ
+        </div>
+      </div>
+
+      <div class="status-box">
+        <div id="statusNewt" class="status-name">
+          うぱ
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- 結果画面 -->
+  <section id="resultScreen" class="screen">
+
+    <div class="result-card">
+
+      <div class="result-image-wrap">
+        <img
+          id="resultImage"
+          src="result_win.png"
+          alt=""
+          class="result-image"
+        >
+      </div>
+
+      <h2 id="resultTitle">
+        優勝！
+      </h2>
+
+      <p id="resultComment">
+        放課後の王者！
+      </p>
+
+      <div class="result-buttons">
+
+        <button
+          id="retryBtn"
+          class="main-btn"
+        >
+          もう1回
+        </button>
+
+        <button
+          id="homeBtn"
+          class="sub-btn"
+        >
+          ホームへ
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script src="game.js"></script>
+
+</body>
+</html>
