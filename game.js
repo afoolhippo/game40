@@ -423,6 +423,11 @@ function update() {
     outNotice.hidden = false;
     outNoticeUntil = performance.now() + 1000;
   }
+  if (!pieces.find(p => p.id === "hippo").alive) {
+    const survivors = pieces.filter(p => p.alive);
+    finishGame(survivors.length === 1 ? survivors[0] : null, true);
+    return;
+  }
   collisionCheck();
 
   const alive = pieces.filter((p) => p.alive);
@@ -602,7 +607,7 @@ function loop() {
   }
 }
 
-function finishGame(winner) {
+function finishGame(winner, hippoLost = false) {
   if (!gameRunning || gameEnded) return;
 
   gameEnded = true;
@@ -624,20 +629,24 @@ function finishGame(winner) {
 
     resultComment.innerHTML = winner
       ? `${winner.name}が優勝！<br>また挑戦しよう！`
+      : hippoLost ? "カバが脱落！<br>また挑戦しよう！"
       : "全員落下！<br>机の上は大混乱！";
   }
 
   shareResult = winner && winner.id === "hippo"
     ? "最後まで机に残った！✏️\n結果：優勝！"
     : winner ? `机から落ちちゃった！✏️\n結果：負け（${winner.name}が優勝）`
+    : hippoLost ? "机から落ちちゃった！✏️\n結果：負け"
     : "机の上は大混乱！✏️\n結果：全員落下";
   outNotice.textContent = "決着！";
   outNotice.hidden = false;
-  schedule(() => {
+  const showResult = () => {
     outNotice.hidden = true;
     showScreen("result");
     revealResultButtons();
-  }, 1000);
+  };
+  if (hippoLost) showResult();
+  else schedule(showResult, 1000);
 }
 
 function startGame() {
